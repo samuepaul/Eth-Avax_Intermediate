@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
-import { malimaAddress } from "../abi/address";
-import MalimaToken from "../abi/MalimaToken.json";
+import { davtAddress } from "../abi/address";
+import DAVTToken from "../abi/DogiAvaxToken.json";
 
 export default function Token() {
   const [provider, setProvider] = useState(null);
@@ -25,36 +25,36 @@ export default function Token() {
       const ethersProvider = new ethers.providers.Web3Provider(provider);
       setProvider(ethersProvider);
 
-      // Create an instance of the MalimaToken contract using the contract ABI and address
-      const malimaContract = new ethers.Contract(
-        malimaAddress,
-        MalimaToken.abi,
+      // Create an instance of the DAVTToken contract using the contract ABI and address
+      const davtContract = new ethers.Contract(
+        davtAddress,
+        DAVTToken.abi,
         ethersProvider.getSigner()
       );
-      setContract(malimaContract);
+      setContract(davtContract);
 
       // Get the balance of the current user's Ethereum address
       ethersProvider
         .getSigner()
         .getAddress()
         .then((address) => {
-          malimaContract.balances(address).then((balance) => {
+          davtContract.balances(address).then((balance) => {
             setBalance(balance.toNumber());
           });
         });
 
-      // Get the total supply of the MalimaToken contract
-      malimaContract.totalSupply().then(function (totalSupply) {
+      // Get the total supply of the DAVTToken contract
+      davtContract.totalSupply().then((totalSupply) => {
         setTotalSupply(totalSupply.toNumber());
       });
 
-      // Get the token name of the MalimaToken contract
-      malimaContract.name().then((name) => {
+      // Get the token name of the DAVTToken contract
+      davtContract.name().then((name) => {
         setTokenName(name);
       });
 
-      // Get the token name of the MalimaToken contract
-      malimaContract.symbol().then((symbol) => {
+      // Get the token name of the DAVTToken contract
+      davtContract.symbol().then((symbol) => {
         setTokenSymbol(symbol);
       });
     });
@@ -80,15 +80,15 @@ export default function Token() {
         return;
       }
 
-      const MalimaContract = new ethers.Contract(malimaAddress, MalimaToken.abi, signer);
-      const tx = await MalimaContract.mint(to, value);
+      const davtContract = new ethers.Contract(davtAddress, DAVTToken.abi, signer);
+      const tx = await davtContract.mint(to, value);
       await tx.wait();
       setMintValue('');
-      console.log(`Minted ${value} Malima tokens to ${to}`);
-      alert(`Minted ${value} Malima tokens to ${to}`);
+      console.log(`Minted ${value} DogiAvax tokens to ${to}`);
+      alert(`Minted ${value} DogiAvax tokens to ${to}`);
     } catch (error) {
-      console.error(`Error minting Malima tokens: ${error}`);
-      alert(`Error minting Malima tokens: ${error}`);
+      console.error(`Error minting DogiAvax tokens: ${error}`);
+      alert(`Error minting DogiAvax tokens: ${error}`);
     }
   };
 
@@ -111,15 +111,15 @@ export default function Token() {
     // Burn tokens
     try {
       const signer = provider.getSigner();
-      const MalimaContract = new ethers.Contract(malimaAddress, MalimaToken.abi, signer);
-      const tx = await MalimaContract.burn(value);
+      const davtContract = new ethers.Contract(davtAddress, DAVTToken.abi, signer);
+      const tx = await davtContract.burn(value);
       await tx.wait();
       setBurnValue('');
-      console.log(`Burned ${value} EPI tokens`);
-      alert(`Burned ${value} Malima tokens`);
+      console.log(`Burned ${value} DogiAvax tokens`);
+      alert(`Burned ${value} DogiAvax tokens`);
     } catch (error) {
-      console.error(`Error burning Malima tokens: ${error}`);
-      alert(`Error burning Malima tokens: ${error}`);
+      console.error(`Error burning DogiAvax tokens: ${error}`);
+      alert(`Error burning DogiAvax tokens: ${error}`);
     }
   };
 

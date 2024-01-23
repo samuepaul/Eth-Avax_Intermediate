@@ -1,10 +1,10 @@
 import './App.css';
-import MalimaToken from './components/MalimaToken';
+import Token from './components/Token';
 
 function App() {
   return (
     <div className="App">
-      <MalimaToken/>
+      <Token/>
     </div>
   );
 }

@@ -2,19 +2,19 @@
 const hre = require("hardhat");
 const fs = require('fs');
 
-// function to deploy the contracts
+// funtion to deploy the contracts
 async function main() {
 
   //deploy the token
-  const Dogi = await hre.ethers.getContractFactory("DogiToken");
-  const dogi = await Dogi.deploy();
-  await dogi.deployed();
-  console.log("dogi deployed to:", dogi.address);
+  const DAVT = await hre.ethers.getContractFactory("DogiAvaxToken");
+  const davt = await DAVT.deploy();
+  await davt.deployed();
+  console.log("davt deployed to:", davt.address);
 
 
   // export the addresses
   fs.writeFileSync('src/abi/address.js', `
-    export const dogiAddress = "${dogi.address}"
+    export const avtnAddress = "${davt.address}"
 
   `)
 }
