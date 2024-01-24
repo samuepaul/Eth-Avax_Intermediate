@@ -1,14 +1,106 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-// Describe block for DogiTokenMint contract tests
-describe("DogiTokenMint Tests", function () {
-  let KingsToken, kingsToken, deployer, user;
+describe("DogiToken", function () {
+    let DogiToken;
+    let dogiToken;
+    let admin;
+    let user1;
+    let user2;
+    let addrs;
+    const initialAmount = 1000;
+
+    beforeEach(async function () {
+        DogiToken = await ethers.getContractFactory("DogiToken");
+        [admin, user1, user2, ...addrs] = await ethers.getSigners();
+        dogiToken = await DogiToken.deploy();
+        await dogiToken.deployed();
+    });
+
+    describe("Deployment", function () {
+        it("should set the right admin", async function () {
+            expect(await dogiToken.admin()).to.equal(admin.address);
+        });
+    });
+
+    describe("createToken", function () {
+        it("should only allow admin to create tokens", async function () {
+            await expect(dogiToken.connect(user1).createToken(user1.address, 100))
+                .to.be.revertedWith("DogiToken: caller is not the admin");
+
+            await expect(dogiToken.connect(admin).createToken(user1.address, 100))
+                .not.to.be.reverted;
+        });
+
+        it("should increase circulating supply when tokens are created", async function () {
+            const supplyBefore = await dogiToken.circulatingSupply();
+            await dogiToken.connect(admin).createToken(user1.address, initialAmount);
+            const supplyAfter = await dogiToken.circulatingSupply();
+            expect(supplyAfter).to.equal(supplyBefore.add(initialAmount));
+        });
+    });
+
+    describe("eliminate", function () {
+        beforeEach(async function () {
+            await dogiToken.connect(admin).createToken(user1.address, initialAmount);
+        });
+
+        it("should allow token holders to burn tokens", async function () {
+            const burnAmount = 100;
+            await dogiToken.connect(user1).eliminate(burnAmount);
+            const balanceAfter = await dogiToken.accountBalances(user1.address);
+            expect(balanceAfter).to.equal(initialAmount - burnAmount);
+        });
+
+        it("should decrease circulating supply when tokens are burned", async function () {
+            const burnAmount = 100;
+            const supplyBefore = await dogiToken.circulatingSupply();
+            await dogiToken.connect(user1).eliminate(burnAmount);
+            const supplyAfter = await dogiToken.circulatingSupply();
+            expect(supplyAfter).to.equal(supplyBefore.sub(burnAmount));
+        });
+    });
+
+    describe("sendToken", function () {
+        beforeEach(async function () {
+            await dogiToken.connect(admin).createToken(user1.address, initialAmount);
+        });
+
+        it("should transfer tokens correctly", async function () {
+            const transferAmount = 100;
+            await dogiToken.connect(user1).sendToken(user2.address, transferAmount);
+            const balanceUser2 = await dogiToken.accountBalances(user2.address);
+            expect(balanceUser2).to.equal(transferAmount);
+        });
+
+        it("should not allow transfers to the same address", async function () {
+            const transferAmount = 100;
+            await expect(dogiToken.connect(user1).sendToken(user1.address, transferAmount))
+                .to.be.revertedWith("DogiToken: cannot transfer to the same address");
+        });
+
+        it("should not allow transfers if insufficient balance", async function () {
+            const transferAmount = initialAmount + 1;
+            await expect(dogiToken.connect(user1).sendToken(user2.address, transferAmount))
+                .to.be.revertedWith("DogiToken: transfer amount exceeds balance");
+        });
+    });
+});
+
+
+
+/*
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+
+// Describe block for DogiToken contract tests
+describe("DogiToken Tests", function () {
+  let DogiToken, dogiToken, deployer, user;
 
   // Common setup before each test
   beforeEach(async function () {
-    // Get the ContractFactory for KingsTokenMint and initialize signers
-    DogiToken = await ethers.getContractFactory("DogiTokenMint");
+    // Get the ContractFactory for DogiToken and initialize signers
+    DogiToken = await ethers.getContractFactory("DogiToken");
     [deployer, user] = await ethers.getSigners();
 
     // Deploy the DogiToken contract for testing
@@ -88,3 +180,4 @@ describe("DogiTokenMint Tests", function () {
     });
   });
 });
+*/
