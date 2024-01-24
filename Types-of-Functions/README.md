@@ -1,4 +1,4 @@
-# AVAX-Intermediate-Projects3
+# AVAX-Intermediate-Types-of-Functions
 
 This is the third project in AVAX-Intermediate, in this project I am tasked to create a smart contract to create my own token on a local HardHat network. Once I have created the contract, I should be able to use remix to interact with it. From remix, the contract owner should be able to mint tokens to a provided address. Any user should be able to burn and transfer tokens.
 
@@ -23,14 +23,41 @@ Download the codes by downloading the entire repository which will give you acce
 
 ```shell
 
- npm install
+ yarn install
 
 ```
+
+Start Local Hardhat Node:
+After installing the dependencies, run the following command to start the local Hardhat node:
+
+```shell
+
+yarn hardhat node
+
+```
+
+Deploy the Contract:
+Open a second terminal and deploy the contract on the local Hardhat node using the following command:
+
+```shell
+
+yarn hardhat run scripts/deploy.js --network localhost
+
+```
+
+Configure MetaMask:
+   - Add Hardhat Network: In MetaMask, add a new network with the following settings:
+     - Network Name: Hardhat
+     - New RPC URL: http://localhost:8545
+     - Chain ID: 1337
+
+   - Import Account: In the first terminal where the Hardhat node is running, copy any of the private keys (preferably the first one) and import it into MetaMask.
 
 After installing the dependences, run the test file by using the following command:
 
 ```shell
-npx hardhat test
+
+yarn hardhat test
 ```
 
 ## Author

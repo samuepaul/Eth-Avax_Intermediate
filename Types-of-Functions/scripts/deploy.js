@@ -4,27 +4,27 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Deploys the DogiTokenMint contract.
+ * Deploys the DogiToken contract.
  */
 async function deployContract() {
-  const Dogi = await hre.ethers.getContractFactory("DogiTokenMint");
-  const dogi = await dogi.deploy();
-  await dogi.deployed();
-  console.log("Dogi deployed to:", Dogi.address);
-
-  return Dogi.address;
-}
+  const DogiToken = await hre.ethers.getContractFactory("DogiToken");
+  const dogitoken = await DogiToken.deploy(); // Corrected line
+  await dogitoken.deployed();
+  console.log("DogiToken deployed to:", dogitoken.address); // Corrected line
+ 
+  return dogitoken.address; // Corrected line
+ } 
 
 /**
  * Writes deployed contract address to a file.
  * @param {string} address - The contract address.
  */
 function exportAddress(address) {
-  const content = `export const DogiAddress = '${address}';\n`;
-  const filePath = path.join(__dirname, 'scripts', 'address.js');
+  const content = `export const DogiTokenAddress = '${address}';\n`;
+  const filePath = path.join(__dirname, 'address.js'); // Corrected line
   fs.writeFileSync(filePath, content);
-}
-
+ }
+ 
 // Main function
 async function main() {
   try {
