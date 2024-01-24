@@ -8,11 +8,11 @@ const path = require('path');
  */
 async function deployContract() {
   const DogiToken = await hre.ethers.getContractFactory("DogiToken");
-  const dogitoken = await DogiToken.deploy(); // Corrected line
+  const dogitoken = await DogiToken.deploy(); 
   await dogitoken.deployed();
-  console.log("DogiToken deployed to:", dogitoken.address); // Corrected line
+  console.log("DogiToken deployed to:", dogitoken.address);
  
-  return dogitoken.address; // Corrected line
+  return dogitoken.address; 
  } 
 
 /**
@@ -21,7 +21,7 @@ async function deployContract() {
  */
 function exportAddress(address) {
   const content = `export const DogiTokenAddress = '${address}';\n`;
-  const filePath = path.join(__dirname, 'address.js'); // Corrected line
+  const filePath = path.join(__dirname, 'address.js'); 
   fs.writeFileSync(filePath, content);
  }
  
