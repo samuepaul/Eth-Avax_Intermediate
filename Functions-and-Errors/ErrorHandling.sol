@@ -1,55 +1,82 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
-pragma solidity ^0.8.17;
+/**
+ * @title FundManager
+ * @dev A simple smart contract for managing deposits and withdrawals of Ether.
+ *      This contract demonstrates the use of Solidity control structures 
+ *      like require(), assert(), and revert() for error handling and validations.
+ */
+contract FundManager {
+    // Mapping to keep track of Ether balances of each address.
+    mapping(address => uint) public balances;
 
-contract ErrorHandling {
-    uint public balance = 0;
+    // Event declarations for logging activities.
 
-    // Function to deposit an amount with a require statement
-    function depositRequire(uint _amount) public {
-        // Check if the deposit amount is greater than zero
-        require(_amount > 0, "Deposit amount must be greater than zero");
+    /**
+     * @dev Emitted when a user deposits Ether to the contract.
+     * @param user The address of the user who made the deposit.
+     * @param amount The amount of Ether deposited.
+     */
+    event Deposit(address indexed user, uint amount);
 
-        // Update the balance
-        balance += _amount;
+    /**
+     * @dev Emitted when a user withdraws Ether from the contract.
+     * @param user The address of the user who made the withdrawal.
+     * @param amount The amount of Ether withdrawn.
+     */
+    event Withdrawal(address indexed user, uint amount);
+
+    /**
+     * @dev Allows users to deposit Ether into the contract.
+     *      A minimum deposit amount is required.
+     */
+    function deposit() public payable {
+        // Check that the sent Ether is above a minimum threshold.
+        require(msg.value > 0.01 ether, "Minimum deposit is 0.01 ETH");
+
+        // Update the sender's balance and emit the Deposit event.
+        balances[msg.sender] += msg.value;
+        emit Deposit(msg.sender, msg.value);
     }
 
-    // Function to withdraw an amount with require statements
-    function withdrawRequire(uint _amount) public {
-        // Check if the withdrawal amount is greater than zero
-        require(_amount > 0, "Withdrawal amount must be greater than zero");
+    /**
+     * @dev Allows users to withdraw Ether from their balance in the contract.
+     * @param _amount The amount of Ether to withdraw.
+     */
+    function withdraw(uint _amount) public {
+        // Check that the sender has enough balance to withdraw.
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
 
-        // Check if the withdrawal amount is not greater than the balance
-        require(_amount <= balance, "Insufficient balance");
+        // Attempt to send Ether and ensure the transaction succeeds.
+        (bool sent, ) = msg.sender.call{value: _amount}("");
+        require(sent, "Failed to send Ether");
 
-        // Update the balance
-        balance -= _amount;
+        // Update the sender's balance and emit the Withdrawal event.
+        // The assert statement is used to verify contract's balance never goes negative.
+        balances[msg.sender] -= _amount;
+        assert(address(this).balance >= 0);
+
+        emit Withdrawal(msg.sender, _amount);
     }
 
-    // Function to divide two numbers with a require statement
-    function divideRequire(uint _numerator, uint _denominator) public pure returns (uint) {
-        // Check if the denominator is not zero
-        require(_denominator != 0, "Cannot divide by zero");
-
-        // Perform the division and return the result
-        return _numerator / _denominator;
+    /**
+     * @dev Returns the contract's current Ether balance.
+     * @return The balance of Ether currently held by the contract.
+     */
+    function getContractBalance() public view returns (uint) {
+        return address(this).balance;
     }
 
-    // Function to demonstrate the use of assert statements
-    function assertFunction() public pure {
-        // Divide 10 by 0, which should trigger a division by zero error and revert the transaction
-        uint result = divideRequire(10, 2);
-        // Assert that the result is equal to 5, which will always fail and cause the transaction to fail
-        assert(result == 6);
-    }
-
-    // Function to demonstrate the use of revert statements
-    function revertFunction() public pure {
-        // Divide 10 by 2, which will give a result of 5
-        uint result = divideRequire(10, 2);
-        // Check if the result is equal to 5, and if true, revert the transaction
-        if(result == 5){
-            revert("This function always reverts");
+    /**
+     * @dev A custom function demonstrating the use of revert() for custom error handling.
+     * @param _value An arbitrary input value for demonstration purposes.
+     */
+    function customFunction(uint _value) public pure {
+        // Custom logic that reverts the transaction if the value is zero.
+        if (_value == 0) {
+            revert("Value cannot be zero");
         }
+        // Additional function logic could be added here.
     }
 }

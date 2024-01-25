@@ -1,4 +1,4 @@
-# DogiToken Smart Contract ETH-AVAX Intermediate Projects4
+# DogiToken Smart Contract ETH-AVAX Intermediate Building on Avalanche
 
 This is a Solidity contract pertaining to the DogiToken, an ERC20 token that has been deployed onto the Avalanche network. This contract expands upon the capabilities of the OpenZeppelin `ERC20` and `Ownable` contracts, furnishing a range of functionalities including token minting, transferring, redeeming, burning, as well as the ability to verify token balances.
 
